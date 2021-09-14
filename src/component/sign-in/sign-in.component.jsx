@@ -13,13 +13,17 @@ class SignIn extends React.Component{
     }
     handleSubmit = event => {
         event.preventDefault();
+        fetch('http://127.0.0.1:3000/api/customers/')
+        .then(items => ()=>{
+            let a = items.json();
+            this.setState({email: a[1], password: ''})
+        } )
         this.setState({email: '', password: ''})
     }
     handleChange = event => {
         const { value, name } = event.target;
         this.setState({[name]: value})
     }
-
     render(){
         return(
             <div className='sign-in'>

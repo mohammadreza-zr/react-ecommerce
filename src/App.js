@@ -5,6 +5,7 @@ import ShopPage from './pages/shop/shop.component';
 import Header from './component/header/header.component';
 import { Switch, Route } from 'react-router-dom';
 import SignInAndSignUp from './pages/sign-in-and-signup/sign-in-and-sign-up.component';
+import Customers from './component/customers/customers.component';
 
 class App extends Component{
   constructor(){
@@ -22,6 +23,7 @@ class App extends Component{
           <Route exact path='/' component={HomePage} />
           <Route exact path='/shop' component={ShopPage} />
           <Route exact path='/signin' component={SignInAndSignUp} />
+          <Route exact path='/customers' component={Customers} />
         </Switch>
       </div>
     )
