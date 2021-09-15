@@ -16,7 +16,7 @@ class Customers extends React.Component{
                 status: false
             },
             pageNumber: 1,
-            corseCount : 0
+            customerCount : 0
         }
     }
     myMath = (lastPage)=>{
@@ -29,25 +29,24 @@ class Customers extends React.Component{
     }
     handleClick = (lastPage) =>{
         let pageNumber1 = typeof(lastPage) == 'number' ? this.myMath(lastPage) : this.state.pageNumber;
-        fetch(`http://localhost:3000/api/corse?page=${pageNumber1}`)
+        fetch(`http://localhost:3000/api/customer?page=${pageNumber1}`)
             .then(items => items.json())
             .then(item => {
-                this.setState({corseCount : item.courseListCount})
-                this.setState({result : item.courseList})
+                this.setState({customerCount : item.customerListCount})
+                this.setState({result : item.customerList})
                 this.setState({pageNumber : pageNumber1})
         });
     }
     handleNextPage = () =>{
         let pageNumber1 = this.state.pageNumber
-        if (this.myMath(this.state.corseCount) > pageNumber1) {
+        if (this.myMath(this.state.customerCount) > pageNumber1) {
             pageNumber1 = pageNumber1 + 1;
         }
-        
-        fetch(`http://localhost:3000/api/corse?page=${pageNumber1}`)
+        fetch(`http://localhost:3000/api/customer?page=${pageNumber1}`)
         .then(items => items.json())
         .then(item => {
-            this.setState({result : item.courseList})
-            this.setState({corseCount: item.courseListCount})
+            this.setState({result : item.customerList})
+            this.setState({customerCount: item.customerListCount})
             this.setState({pageNumber: pageNumber1})
             })
     }
@@ -62,7 +61,7 @@ class Customers extends React.Component{
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: this.state.editName.name })
         };
-        fetch(`http://localhost:3000/api/corse/${id}`, requestOptions)
+        fetch(`http://localhost:3000/api/customer/${id}`, requestOptions)
             .then(response => response.json())
             .then(res => {
                 if(!res.message) {this.handleClick(); this.setState({editName: {id:'', name:''}}) }
@@ -88,17 +87,17 @@ class Customers extends React.Component{
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: this.state.addName })
         };
-        fetch('http://localhost:3000/api/corse', requestOptions)
+        fetch('http://localhost:3000/api/customer', requestOptions)
             .then(response => response.json())
             .then(res => {
                 this.setState({addName: ''})
-                this.handleClick(res.courseListCount);
+                this.handleClick(res.CustomerListCount);
             })
     }
 
 
     handleDelete = (id) => {
-        fetch(`http://localhost:3000/api/corse/${id}`, { method: 'DELETE' })
+        fetch(`http://localhost:3000/api/customer/${id}`, { method: 'DELETE' })
         .then(response => {
             if(response.status === 200){
                 this.handleClick();
@@ -107,10 +106,11 @@ class Customers extends React.Component{
     }
 
 
-    test = ({id, name})=>{
+    test = ({id, name, teacher})=>{
         return (
         <div className='card'>
             <h3 id={id}>{name}</h3>
+            <span id={id}>{teacher}</span>
             <button id={id} onClick={this.handleEdit.bind(this, id)}>edit</button>
             <button id={id} onClick={this.handleDelete.bind(this, id)}>delete</button>
             {
@@ -147,8 +147,8 @@ class Customers extends React.Component{
                     }
                     {
                         result ?
-                        result.map( ({_id, name}) => (
-                            <this.test key={_id} id={_id} name={name}/>
+                        result.map( ({_id, name, teacher}) => (
+                            <this.test key={_id} id={_id} name={name} teacher={teacher} />
                         ))
                         : null
                     }
