@@ -147,8 +147,8 @@ class Customers extends React.Component{
                     }
                     {
                         result ?
-                        result.map( ({id, name}) => (
-                            <this.test key={id} id={id} name={name}/>
+                        result.map( ({_id, name}) => (
+                            <this.test key={_id} id={_id} name={name}/>
                         ))
                         : null
                     }
