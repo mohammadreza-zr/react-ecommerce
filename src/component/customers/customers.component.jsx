@@ -148,17 +148,6 @@ class Customers extends React.Component{
         if(this.state.openEdit.status === false || this.state.openEdit.id !== id){
             return this.setState({openEdit: {id: id, status: true}})
         }
-        console.log('handle edit id : '+id)
-        const requestOptions = {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: this.state.editCustomer.name })
-        };
-        fetch(`http://localhost:3000/api/customer/${id}`, requestOptions)
-            .then(response => response.json())
-            .then(res => {
-                if(!res.message) {this.handleClick(); this.setState({editName: {id:'', name:''}}) }
-                else alert(res.message)})
     }
 
     handleUpdate = () => {
@@ -206,6 +195,19 @@ class Customers extends React.Component{
         delete value[id]
         let newValue = value.toString().replace(/,/g, ' ').trim().replace(/\s+/g, ' ')
         this.setState({addCustomer:{
+            name: name,
+            tags: newValue,
+            number: number,
+            wallet: wallet
+        }});
+    }
+    handleRemoveTagEdit = (e) => {
+        const {name,tags,number,wallet} = this.state.editCustomer
+        let id = e.target.id
+        let value = tags.replace(/\s+/g, ' ').trim().split(' ')
+        delete value[id]
+        let newValue = value.toString().replace(/,/g, ' ').trim().replace(/\s+/g, ' ')
+        this.setState({editCustomer:{
             name: name,
             tags: newValue,
             number: number,
@@ -327,7 +329,8 @@ class Customers extends React.Component{
     closeModal= () => {
         this.setState({openEdit:{
             id:'',
-            status:false
+            status:false,
+            fetch:false
         }})
     }
     myModal = () => {
@@ -409,7 +412,7 @@ class Customers extends React.Component{
                                                 tag.map((object, i) =>
                                                     tag[i].length >= 1 ?
                                                         <div className="tooltip">
-                                                            <b onClick={this.handleRemoveTag} className='tags' id={i} key={i}>{object}</b>
+                                                            <b onClick={this.handleRemoveTagEdit} className='tags' id={i} key={i}>{object}</b>
                                                             <span className='tooltipText'>Click to remove</span>
                                                         </div>
                                                         :null
