@@ -4,8 +4,9 @@ import { Fragment } from 'react'
 import CustomButton from '../custom-button/custom-button.component';
 import FormInput from '../form-input/form-input.component';
 import './customers.styles.scss';
-import {ReactComponent as EditIcon } from './edit.svg'
-import {ReactComponent as DeleteIcon } from './delete.svg'
+import {ReactComponent as EditIcon } from './edit.svg';
+import {ReactComponent as DeleteIcon } from './delete.svg';
+import moment from 'jalali-moment'
 
 class Customers extends React.Component{
     constructor(){
@@ -152,7 +153,6 @@ class Customers extends React.Component{
 
     handleUpdate = () => {
         let id = this.state.openEdit.id
-        console.log('handle edit id : '+id)
         const requestOptions = {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -250,36 +250,41 @@ class Customers extends React.Component{
 
     test = ({id, ...other})=>{
         let {name, number, tags, wallet, completed, publishDate} = {...other.other};
-        return(
-            
+        // let momentTime = moment().locale('fa').format('YYYY/MM/DD'),
+        //     today = momentTime.toString(),
+        //     b = publishDate,
+        //     a = b.toString()
+
+        // console.log(typeof(today),today, typeof(a),a, today===a)
+        return(   
             <tr key={id}>
             <td className="px-6 py-4 whitespace-nowrap">
                 <div className="ml-4">
-                  <div className="text-sm font-medium text-gray-900">{name}</div>
+                  <div className="text-sm font-medium text-gray-900">{(name.length > 20) ? name.substr(0, 20-1) + ' ...' : name}</div>
                 </div>
             </td>
             <td className="px-6 py-4 whitespace-nowrap">
-              <div className="text-sm text-gray-900">N: {number}</div>
+              <div className="text-sm text-gray-900">{(number.length > 10) ? number.substr(0, 10-1) + ' ...' : number}</div>
             </td>
             <td className="px-6 py-4 whitespace-nowrap">
-              <div className="text-sm text-gray-900">{tags}</div>
+              <div className="text-sm text-gray-900">{(tags.length > 15) ? tags.substr(0, 15-1) + ' ...' : tags}</div>
             </td>
             <td className="px-6 py-4 whitespace-nowrap">
-              <div className="text-sm text-gray-900">w: {wallet}</div>
+              <div className="text-sm text-gray-900">{(wallet.length > 10) ? wallet.substr(0, 10-1) + ' ...' : wallet}</div>
             </td>
             <td className="px-6 py-4 whitespace-nowrap">
-              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${completed?'bg-green-100 text-green-800':'bg-red-100 text-red-800'}`}>
+              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${completed?'greenColor':'redColor'}`}>
                 {
                     completed? 'completed' : 'Not completed'
                 }
               </span>
             </td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{publishDate}</td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{publishDate === moment().locale('fa').format('YYYY/MM/DD') ? 'today' : publishDate}</td>
             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <EditIcon className='cursor-pointer changeIcon' id={id} onClick={this.handleEdit.bind(this, id)} />
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <DeleteIcon className='cursor-pointer rounded changeIcon bg-red-100 text-red-800 w-10' id={id} onClick={this.handleDelete.bind(this, id)} />
+                <DeleteIcon className='cursor-pointer rounded changeIcon redColor' id={id} onClick={this.handleDelete.bind(this, id)} />
             </td>
           </tr>    
         )
@@ -337,18 +342,18 @@ class Customers extends React.Component{
         let id = this.state.openEdit.id
         let isOpen = this.state.openEdit.status
         if(!this.state.openEdit.fetch) {
-        fetch(`http://localhost:3000/api/customer/${id}`)
-            .then(response => response.json())
-            .then(res => {
-                this.setState({
-                    editCustomer:{
-                        name: res.name,
-                        tags: res.tags,
-                        number: res.number,
-                        wallet: res.wallet
-                    }
+            fetch(`http://localhost:3000/api/customer/${id}`)
+                .then(response => response.json())
+                .then(res => {
+                    this.setState({
+                        editCustomer:{
+                            name: res.name,
+                            tags: res.tags,
+                            number: res.number,
+                            wallet: res.wallet
+                        }
+                    })
                 })
-            })
             this.setState({openEdit:{id:id,status:true,fetch:true}})
         }
         let {name, tags, number, wallet} = this.state.editCustomer
@@ -359,7 +364,7 @@ class Customers extends React.Component{
             <Transition appear show={isOpen} as={Fragment}>
               <Dialog
                 as="div"
-                className="fixed inset-0 z-10 overflow-y-auto"
+                className="fixed inset-0 z-10 overflow-y-auto bgFilter "
                 onClose={this.closeModal}
               >
                 <div className="min-h-screen px-4 text-center">
@@ -391,7 +396,8 @@ class Customers extends React.Component{
                     leaveFrom="opacity-100 scale-100"
                     leaveTo="opacity-0 scale-95"
                   >
-                    <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+                    <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform border
+                     bg-white shadow-xl rounded-2xl">
                       <Dialog.Title
                         as="h3"
                         className="text-lg font-medium leading-6 text-gray-900"
@@ -431,17 +437,17 @@ class Customers extends React.Component{
                         </p>
                       </div>
       
-                      <div className="mt-4">
+                      <div className="mt-4 flex justify-between">
                         <button
                           type="button"
-                          className="inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                          className="inline-flex justify-center px-4 py-2 text-sm font-medium btn border border-transparent rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                           onClick={this.handleUpdate}
                         >
                           Submit
                         </button>
                         <button
                           type="button"
-                          className="inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                          className="inline-flex justify-center px-4 py-2 text-sm font-medium btn border border-transparent rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                           onClick={this.closeModal}
                         >
                           Cancel

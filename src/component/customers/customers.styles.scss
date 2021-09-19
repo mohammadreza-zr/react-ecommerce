@@ -1,10 +1,9 @@
-.card{
-    background-color: #fdfffc;
-    border-radius: 5px;
-}
 .addCustomer{
     width: 40%;
     height: auto;
+}
+.bgFilter{
+    backdrop-filter: blur(6px);
 }
 .formsCustomer{
     width: 300px;
@@ -34,6 +33,7 @@
         padding: 5px;
         cursor: pointer;
         background-color: #2ec4b6;
+        color: #011627;
     }
 }
   
@@ -56,10 +56,21 @@
 .tooltip:hover .tooltipText {
     visibility: visible;
 }
-.bg-dark{
-    background-color: darkgray;
-}
 .changeIcon{
     width: 24px;
     height: auto;
+    color: #011627;
+    background-color: rgba($color: #011627, $alpha: 0.1);
+}
+.redColor{
+    color: #e71d36;
+    background-color: rgba($color: #e71d36, $alpha: 0.1);
+}
+.greenColor{
+    color: #2ec4b6;
+    background-color: rgba($color: #2ec4b6, $alpha: 0.1);
+}
+.btn{
+    color: #fdfffc;
+    background-color: rgba($color: #011627, $alpha: 1.0);
 }
