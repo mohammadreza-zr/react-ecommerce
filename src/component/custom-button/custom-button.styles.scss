@@ -6,16 +6,16 @@
     line-height: 50px;
     padding: 0 35px;
     font-size: 15px;
-    background-color: black;
-    color: white;
+    background-color: #011627;
+    color: #fdfffc;
     text-transform: uppercase;
     border: none;
     cursor: pointer;
     border-radius: 3px;
 
     &:hover{
-        background-color: white;
-        color: black;
-        border: 1px solid black;
+        background-color: #fdfffc;
+        color: #011627;
+        border: 1px solid #011627;
     }
 }

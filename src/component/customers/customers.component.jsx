@@ -1,7 +1,11 @@
 import React from 'react';
+import { Dialog, Transition } from '@headlessui/react'
+import { Fragment } from 'react'
 import CustomButton from '../custom-button/custom-button.component';
 import FormInput from '../form-input/form-input.component';
 import './customers.styles.scss';
+import {ReactComponent as EditIcon } from './edit.svg'
+import {ReactComponent as DeleteIcon } from './delete.svg'
 
 class Customers extends React.Component{
     constructor(){
@@ -15,24 +19,18 @@ class Customers extends React.Component{
                 wallet: ''
             },
             editCustomer: {
-                id: '',
-                value: {
-                    name: '',
-                    number: '',
-                    tags: '',
-                    wallet: ''
-                }
+                name: '',
+                number: '',
+                tags: '',
+                wallet: ''
             },
             openEdit: {
                 id: '',
-                status: false
+                status: false,
+                fetch: false
             },
             pageNumber: 1,
-            customerCount : 0,
-            tags: {
-                id: '',
-                value: []
-            }
+            customerCount : 0
         }
     }
     myMath = (lastPage)=>{
@@ -42,6 +40,11 @@ class Customers extends React.Component{
                 : Math.trunc(( lastPage / 10 ) + 1) // if flout true // 5 + 1
             : 1;                                    // if false      // 1
         return page
+    }
+    componentDidMount(){
+        fetch('http://localhost:3000/api/customer?page=1')
+            .then(items => items.json())
+            .then(item => {this.setState({customerCount : item.customerListCount})});
     }
     handleClick = (lastPage) =>{
         let pageNumber1 = typeof(lastPage) == 'number' ? this.myMath(lastPage) : this.state.pageNumber;
@@ -67,11 +70,85 @@ class Customers extends React.Component{
             })
     }
 
+    table = () => {
+        return (
+          <div className="flex flex-col">
+            <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Name
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Number
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Tags
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Wallet
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Completed
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          publish Date
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Edit
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Delete
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                    {
+                        this.state.result ?
+                        this.state.result.map( ({_id, ...other}) => (<this.test key={_id} id={_id} other={other} />))
+                        : null
+                    }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
 
     handleEdit = (id) => {
         if(this.state.openEdit.status === false || this.state.openEdit.id !== id){
-            return this.setState({openEdit: {id:id, status:true}})
+            return this.setState({openEdit: {id: id, status: true}})
         }
+        console.log('handle edit id : '+id)
         const requestOptions = {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -84,23 +161,34 @@ class Customers extends React.Component{
                 else alert(res.message)})
     }
 
-
-    handleEditChange = event => {
-        const { id, value } = event.target;
-        // const current = this.state
-        this.setState({editName: {id:id, value:value}})
+    handleUpdate = () => {
+        let id = this.state.openEdit.id
+        console.log('handle edit id : '+id)
+        const requestOptions = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: this.state.editCustomer.name,
+                tags: this.state.editCustomer.tags,
+                number: this.state.editCustomer.number,
+                wallet: this.state.editCustomer.wallet
+            })
+        };
+        fetch(`http://localhost:3000/api/customer/${id}`, requestOptions)
+            .then(response => response.json())
+            .then(res => {
+                if(!res.message) {this.handleClick(); this.setState({openEdit: {id:'', status:false, fetch:false}}); this.setState({editCustomer:{name:'',tags:'',number:'',wallet:''}}) }
+                else alert(res.message)})
     }
-    // handleKeyDown = (e) => {
-    //     if (e.key === 'Enter') {
-    //         let value = this.state.tags.value
-    //         value.push(e.target.value)
-    //         this.setState({
-    //             tags: {value:value}
-    //         })
-    //         e.target.value = ''
-    //     }
-    // }
 
+    handleChangeEdit = (event) => {
+        const current = this.state.editCustomer
+        const { value, name } = event.target;
+        current[name] = value
+        this.setState({editCustomer: current})
+        const rtl_rx = /[\u0591-\u07FF]/;
+        event.target.style.direction = rtl_rx.test(event.target.value) ? 'rtl' : 'ltr';
+    }
     handleChange = event => {
         const current = this.state.addCustomer
         const { value, name } = event.target;
@@ -109,13 +197,19 @@ class Customers extends React.Component{
         const rtl_rx = /[\u0591-\u07FF]/;
         event.target.style.direction = rtl_rx.test(event.target.value) ? 'rtl' : 'ltr';
     }
+
+
     handleRemoveTag = (e) => {
+        const {name,tags,number,wallet} = this.state.addCustomer
         let id = e.target.id
-        let value = this.state.addCustomer.tags.replace(/\s+/g, ' ').trim().split(' ')
+        let value = tags.replace(/\s+/g, ' ').trim().split(' ')
         delete value[id]
         let newValue = value.toString().replace(/,/g, ' ').trim().replace(/\s+/g, ' ')
         this.setState({addCustomer:{
-            tags: newValue
+            name: name,
+            tags: newValue,
+            number: number,
+            wallet: wallet
         }});
     }
     handleAdd = () => {
@@ -124,12 +218,11 @@ class Customers extends React.Component{
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify( {
                 name : this.state.addCustomer.name,
-                tags : [this.state.addCustomer.tags],
+                tags : this.state.addCustomer.tags,
                 number : this.state.addCustomer.number,
                 wallet : this.state.addCustomer.wallet,
             } )
         };
-        console.log(requestOptions);
         fetch('http://localhost:3000/api/customer', requestOptions)
             .then(response => response.json())
             .then(res => {
@@ -155,33 +248,38 @@ class Customers extends React.Component{
 
     test = ({id, ...other})=>{
         let {name, number, tags, wallet, completed, publishDate} = {...other.other};
-        return (
-        <div className='card text-center p-1 m-2'>
-            <h3 id={id}>Name: <span style={{color:'#fca311'}}>{name}</span></h3>
-            <div>
-                <p id={id}>Number: {number}</p>
-                <p id={id}>Wallet: {wallet}</p>
-            </div>
-            <div>
-                <p id={id}>Tags: {tags.map(i => <span style={{margin:'5px'}}>{i}</span>)}</p>
-                <p id={id}>Completed: {completed? 'true' : 'false'}</p>
-                <p id={id}>Publish Date: {publishDate}</p>
-            </div>
-            <div className='flex justify-between'>
-                <CustomButton className='bg-gray-900 hover:bg-red-500 px-20 py-4 rounded' id={id} onClick={this.handleEdit.bind(this, id)}>edit</CustomButton>
-                <CustomButton id={id} onClick={this.handleDelete.bind(this, id)}>delete</CustomButton>
-            </div>
-            {
-                this.state.openEdit.status && this.state.openEdit.id === id ? 
-                <div className='flex'>
-                    <FormInput label='Name' id={id} type="text" name="name" value={name} onChange={this.handleEditChange} />
-                    <FormInput label='Number' id={id} type="number" name="number" value={number} onChange={this.handleEditChange} />
-                    <FormInput label='Tags' id={id} type="text" name="tags" value={tags} onChange={this.handleEditChange} />
-                    <FormInput label='Wallet' id={id} type="number" name="wallet" value={wallet} onChange={this.handleEditChange} />
+        return(
+            
+            <tr key={id}>
+            <td className="px-6 py-4 whitespace-nowrap">
+                <div className="ml-4">
+                  <div className="text-sm font-medium text-gray-900">{name}</div>
                 </div>
-                : null
-            }
-        </div>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+              <div className="text-sm text-gray-900">N: {number}</div>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+              <div className="text-sm text-gray-900">{tags}</div>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+              <div className="text-sm text-gray-900">w: {wallet}</div>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${completed?'bg-green-100 text-green-800':'bg-red-100 text-red-800'}`}>
+                {
+                    completed? 'completed' : 'Not completed'
+                }
+              </span>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{publishDate}</td>
+            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <EditIcon className='cursor-pointer changeIcon' id={id} onClick={this.handleEdit.bind(this, id)} />
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <DeleteIcon className='cursor-pointer rounded changeIcon bg-red-100 text-red-800 w-10' id={id} onClick={this.handleDelete.bind(this, id)} />
+            </td>
+          </tr>    
         )
     }
 
@@ -196,16 +294,14 @@ class Customers extends React.Component{
                         <FormInput label='Name' type="text" name='name' value={name ? name : ''} onChange={this.handleChange} />
                         <div className='relative '>
                             <FormInput label='Tags' type='text' name='tags' value={tags ? tags : ''} onChange={this.handleChange} onKeyDown={this.handleKeyDown} />
-                            <div className='flex flex-row relative m-0 p-0'>
+                            <div className='flex flex-row tagDiv m-0 p-0'>
                             {
                                 tag[0].length >= 1 || tag[1] ?
                                 tag.map((object, i) =>
                                     tag[i].length >= 1 ?
-                                        <div>
-                                            <div class="tooltip">
-                                                <b onClick={this.handleRemoveTag} className='bg-green-500 tags' id={i} key={i}>{object}</b>
-                                                <span className='tooltiptext'>Click to remove</span>
-                                            </div>
+                                        <div class="tooltip">
+                                            <b onClick={this.handleRemoveTag} className='tags' id={i} key={i}>{object}</b>
+                                            <span className='tooltipText'>Click to remove</span>
                                         </div>
                                         :null
                                 )
@@ -227,30 +323,163 @@ class Customers extends React.Component{
         )
     }
 
+
+    closeModal= () => {
+        this.setState({openEdit:{
+            id:'',
+            status:false
+        }})
+    }
+    myModal = () => {
+        let id = this.state.openEdit.id
+        let isOpen = this.state.openEdit.status
+        if(!this.state.openEdit.fetch) {
+        fetch(`http://localhost:3000/api/customer/${id}`)
+            .then(response => response.json())
+            .then(res => {
+                this.setState({
+                    editCustomer:{
+                        name: res.name,
+                        tags: res.tags,
+                        number: res.number,
+                        wallet: res.wallet
+                    }
+                })
+            })
+            this.setState({openEdit:{id:id,status:true,fetch:true}})
+        }
+        let {name, tags, number, wallet} = this.state.editCustomer
+        let tag = tags.trim().replace(/\s+/g, ' ').split(' ');
+        return (
+          <>
+            <div></div>
+            <Transition appear show={isOpen} as={Fragment}>
+              <Dialog
+                as="div"
+                className="fixed inset-0 z-10 overflow-y-auto"
+                onClose={this.closeModal}
+              >
+                <div className="min-h-screen px-4 text-center">
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <Dialog.Overlay className="fixed inset-0" />
+                  </Transition.Child>
+      
+                  {/* This element is to trick the browser into centering the modal contents. */}
+                  <span
+                    className="inline-block h-screen align-middle"
+                    aria-hidden="true"
+                  >
+                    &#8203;
+                  </span>
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100 scale-100"
+                    leaveTo="opacity-0 scale-95"
+                  >
+                    <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+                      <Dialog.Title
+                        as="h3"
+                        className="text-lg font-medium leading-6 text-gray-900"
+                      >
+                        edit: {name}
+                      </Dialog.Title>
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500">
+                        <div className='editCustomer'>
+                                <div className='flex'>
+                                    <div className='mr-2'>
+                                        <FormInput label='Name' type="text" name='name' value={name ? name : ''} onChange={this.handleChangeEdit} />
+                                        <div className='relative'>
+                                            <FormInput label='Tags' type='text' name='tags' value={tags ? tags : ''} onChange={this.handleChangeEdit} />
+                                            <div className='flex flex-row tagDiv m-0 p-0'>
+                                            {
+                                                tag[0].length >= 1 || tag[1] ?
+                                                tag.map((object, i) =>
+                                                    tag[i].length >= 1 ?
+                                                        <div className="tooltip">
+                                                            <b onClick={this.handleRemoveTag} className='tags' id={i} key={i}>{object}</b>
+                                                            <span className='tooltipText'>Click to remove</span>
+                                                        </div>
+                                                        :null
+                                                )
+                                                :null
+                                            }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='ml-2'>
+                                        <FormInput label='Number' type="text" name='number' value={number ? number : ''} onChange={this.handleChangeEdit} />
+                                        <FormInput label='Wallet' type="text" name='wallet' value={wallet ? wallet : ''} onChange={this.handleChangeEdit} />
+                                    </div>
+                                </div>
+                        </div>
+                        </p>
+                      </div>
+      
+                      <div className="mt-4">
+                        <button
+                          type="button"
+                          className="inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                          onClick={this.handleUpdate}
+                        >
+                          Submit
+                        </button>
+                        <button
+                          type="button"
+                          className="inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                          onClick={this.closeModal}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </Transition.Child>
+                </div>
+              </Dialog>
+            </Transition>
+          </>
+        )
+      }
+
     render(){
-        const {result, pageNumber} = this.state
+        const {result, pageNumber, customerCount, openEdit} = this.state
         return(
             <div className='customers-div'>
                 <this.Add />
-                <div className='result'>
-                    {
-                        result.length >= 1 ? 
+                {
+                    result.length >= 1 ?
+                    openEdit.status ?
+                        <this.myModal id={this.state.openEdit.id} />
+                    :null
+                    :null
+                }
+                {
+                    result.length >= 1 ? 
+                    <div className='result'>
                         <h2>Page: {pageNumber}</h2>
-                        : null
-                    }
-                    {
-                        result ?
-                        result.map( ({_id, ...other}) => (
-                            <this.test key={_id} id={_id} other={other} />
-                        ))
-                        : null
-                    }{
-                        result.length >= 1 ?
-                        <CustomButton type="button" className='custom-button' onClick={this.handleNextPage}>Next Page</CustomButton>
-                        : null
-                    }
-                </div>
+                        <this.table />
+                        {
+                            pageNumber < this.myMath(customerCount) ?
+                                <CustomButton type="button" className='custom-button' onClick={this.handleNextPage}>Next Page</CustomButton>
+                                : null
+                        }
+                    </div>
+                    :null
+                }
             </div>
+            
         )
     }
 }
