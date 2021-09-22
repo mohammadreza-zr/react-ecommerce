@@ -1,0 +1,15 @@
+{
+    "cSpell.enableFiletypes": [
+        "blade",
+        "jsx-tags",
+        "sass",
+        "sass.hover",
+        "sql",
+        "vue",
+        "xml"
+    ],
+    "cSpell.language": "en",
+    "editor.formatOnSave": true,
+    "files.trimTrailingWhitespace": true,
+    "prettier.vueIndentScriptAndStyle": true
+}

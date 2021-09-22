@@ -1,76 +1,76 @@
-.addCustomer{
-    width: 40%;
-    height: auto;
+.addCustomer {
+  width: 40%;
+  height: auto;
 }
-.bgFilter{
-    backdrop-filter: blur(6px);
+.bgFilter {
+  backdrop-filter: blur(6px);
 }
-.formsCustomer{
-    width: 300px;
-    height: auto;
+.formsCustomer {
+  width: 300px;
+  height: auto;
 }
-.tagDiv{
-    width: 230px;
-    height: 0;   
+.tagDiv {
+  width: 230px;
+  height: 0;
 }
-.editCustomer{
-    width: 100%;
-    height: auto;
+.editCustomer {
+  width: 100%;
+  height: auto;
 }
 
 .tooltip {
-    position: relative;
-    display: inline-block;
-    top: -34px;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    height: 100%;
+  position: relative;
+  display: inline-block;
+  top: -34px;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
 
-    .tags{
-        margin: -40px 2px 5px 2px;
-        border-radius: 5px;
-        padding: 5px;
-        cursor: pointer;
-        background-color: #2ec4b6;
-        color: #011627;
-    }
-}
-  
-.tooltip .tooltipText {
-    visibility: hidden;
-    width: 115px;
-    background-color: #011627;
-    color: #fff;
-    text-align: center;
+  .tags {
+    margin: -40px 2px 5px 2px;
     border-radius: 5px;
-    padding: 5px 0;  
-    font-size: 14px;
-    opacity: 0.7;
-    position: absolute;
-    top: -37px;
-    left: -20px;
-    z-index: 1;
-}
-  
-.tooltip:hover .tooltipText {
-    visibility: visible;
-}
-.changeIcon{
-    width: 24px;
-    height: auto;
+    padding: 5px;
+    cursor: pointer;
+    background-color: #2ec4b6;
     color: #011627;
-    background-color: rgba($color: #011627, $alpha: 0.1);
+  }
 }
-.redColor{
-    color: #e71d36;
-    background-color: rgba($color: #e71d36, $alpha: 0.1);
+
+.tooltip .tooltipText {
+  visibility: hidden;
+  width: 115px;
+  background-color: #011627;
+  color: #fff;
+  text-align: center;
+  border-radius: 5px;
+  padding: 5px 0;
+  font-size: 14px;
+  opacity: 0.7;
+  position: absolute;
+  top: -37px;
+  left: -20px;
+  z-index: 1;
 }
-.greenColor{
-    color: #2ec4b6;
-    background-color: rgba($color: #2ec4b6, $alpha: 0.1);
+
+.tooltip:hover .tooltipText {
+  visibility: visible;
 }
-.btn{
-    color: #fdfffc;
-    background-color: rgba($color: #011627, $alpha: 1.0);
+.changeIcon {
+  width: 24px;
+  height: auto;
+  color: #011627;
+  background-color: rgba($color: #011627, $alpha: 0.1);
+}
+.redColor {
+  color: #e71d36;
+  background-color: rgba($color: #e71d36, $alpha: 0.1);
+}
+.greenColor {
+  color: #2ec4b6;
+  background-color: rgba($color: #2ec4b6, $alpha: 0.1);
+}
+.btn {
+  color: #fdfffc;
+  background-color: rgba($color: #011627, $alpha: 1);
 }
