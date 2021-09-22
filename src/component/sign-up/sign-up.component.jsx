@@ -16,6 +16,7 @@ class SignUp extends React.Component {
       confirmPassword: '',
       registerMessage: '',
       fieldMessage: '',
+      redirect: false,
     };
   }
 
@@ -47,10 +48,10 @@ class SignUp extends React.Component {
               password: '',
               confirmPassword: '',
               registerMessage: await res.message,
+              redirect: true,
             }),
             localStorage.setItem('x-auth-token', res['x-auth-token']),
-            setCurrentUser(res.user),
-            (<Redirect to="/" />))
+            setCurrentUser(res.user))
           : this.setState({ registerMessage: await res.message });
       });
   };
@@ -103,6 +104,7 @@ class SignUp extends React.Component {
           </CustomButton>
           <p>{this.state.registerMessage}</p>
           <p>{this.state.fieldMessage}</p>
+          {this.state.redirect ? <Redirect to="/" /> : null}
         </form>
       </div>
     );
