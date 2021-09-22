@@ -13,6 +13,7 @@ class SignIn extends React.Component {
       loginEmail: '',
       loginPassword: '',
       loginMessage: '',
+      redirect: false,
     };
   }
   handleSubmit = async (event) => {
@@ -36,10 +37,10 @@ class SignIn extends React.Component {
               loginEmail: '',
               loginPassword: '',
               loginMessage: await res.message,
+              redirect: true,
             }),
             localStorage.setItem('x-auth-token', res['x-auth-token']),
-            setCurrentUser(res.user),
-            (<Redirect to="/" />))
+            setCurrentUser(res.user))
           : this.setState({ loginMessage: await res.message });
       });
   };
@@ -73,6 +74,7 @@ class SignIn extends React.Component {
             Sign In
           </CustomButton>
           <p>{this.state.loginMessage}</p>
+          {this.state.redirect ? <Redirect to="/" /> : null}
         </form>
       </div>
     );
