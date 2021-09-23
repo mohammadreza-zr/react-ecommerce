@@ -11,11 +11,15 @@
   right: 70px;
   z-index: 10;
 
+  .empty-message {
+    margin: auto;
+  }
+
   .cart-items {
     height: 240px;
     display: flex;
     flex-direction: column;
-    overflow: scroll;
+    overflow: auto;
   }
   bottom {
     margin-top: auto;

@@ -4,8 +4,8 @@ import { Fragment } from 'react';
 import CustomButton from '../custom-button/custom-button.component';
 import FormInput from '../form-input/form-input.component';
 import './customers.styles.scss';
-import { ReactComponent as EditIcon } from '../../assets/images/edit.svg';
-import { ReactComponent as DeleteIcon } from '../../assets/images/delete.svg';
+import { ReactComponent as EditIcon } from '../../assets/svg/edit.svg';
+import { ReactComponent as DeleteIcon } from '../../assets/svg/delete.svg';
 import moment from 'jalali-moment';
 
 class Customers extends React.Component {
