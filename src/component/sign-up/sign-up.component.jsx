@@ -104,7 +104,7 @@ class SignUp extends React.Component {
           </CustomButton>
           <p>{this.state.registerMessage}</p>
           <p>{this.state.fieldMessage}</p>
-          {this.state.redirect ? <Redirect to="/" /> : null}
+          {/* {this.state.redirect ? <Redirect to="/" /> : null} */}
         </form>
       </div>
     );

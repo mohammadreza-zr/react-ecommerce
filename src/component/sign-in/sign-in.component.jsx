@@ -74,7 +74,7 @@ class SignIn extends React.Component {
             Sign In
           </CustomButton>
           <p>{this.state.loginMessage}</p>
-          {this.state.redirect ? <Redirect to="/" /> : null}
+          {/* {this.state.redirect ? <Redirect to="/" /> : null} */}
         </form>
       </div>
     );

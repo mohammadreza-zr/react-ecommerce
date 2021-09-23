@@ -12,10 +12,23 @@
   border: none;
   cursor: pointer;
   border-radius: 3px;
+  display: flex;
+  justify-content: center;
 
   &:hover {
     background-color: #fdfffc;
     color: #011627;
     border: 1px solid #011627;
+  }
+  &.inverted {
+    background-color: #fdfffc;
+    color: #011627;
+    border: 1px solid #011627;
+
+    &:hover {
+      background-color: #011627;
+      color: #fdfffc;
+      border: none;
+    }
   }
 }
