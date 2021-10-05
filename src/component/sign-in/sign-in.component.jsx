@@ -5,6 +5,7 @@ import CustomButton from '../custom-button/custom-button.component';
 import { Redirect } from 'react-router';
 import { connect } from 'react-redux';
 import { setCurrentUser } from '../../redux/user/user-actions';
+import { GoogleLogin } from 'react-google-login';
 
 class SignIn extends React.Component {
   constructor() {
@@ -48,6 +49,15 @@ class SignIn extends React.Component {
     const { value, name } = event.target;
     this.setState({ [name]: value });
   };
+  googleSuccess = async (res) => {
+    const result = await res?.profileObj;
+    const token = await res?.tokenId;
+    await setCurrentUser(result);
+    await console.log(result, token);
+  };
+  googleFailure = () => {
+    console.log('google login failure');
+  };
   render() {
     return (
       <div className="sign-in mr-64">
@@ -73,6 +83,21 @@ class SignIn extends React.Component {
           <CustomButton className="custom-button" type="submit">
             Sign In
           </CustomButton>
+          <GoogleLogin
+            clientId="686483203176-s7h5vnprfjrvl1elmp8d1umnq89fis26.apps.googleusercontent.com"
+            render={(renderProps) => (
+              <button
+                onClick={renderProps.onClick}
+                disabled={renderProps.disabled}
+                variant="contained"
+              >
+                google sign in
+              </button>
+            )}
+            onSuccess={this.googleSuccess}
+            onFailure={this.googleFailure}
+            cookiePolicy="single_host_origin"
+          />
           <p>{this.state.loginMessage}</p>
           {/* {this.state.redirect ? <Redirect to="/" /> : null} */}
         </form>

@@ -22,6 +22,13 @@ const Header = ({ currentUser, hidden }) => (
         CONTACT
       </Link>
       {currentUser ? (
+        currentUser.role === 'admin' ? (
+          <Link to="/customers" className="option">
+            Customers
+          </Link>
+        ) : null
+      ) : null}
+      {currentUser ? (
         <Link to="/logout" className="option">
           Logout
         </Link>
@@ -30,13 +37,6 @@ const Header = ({ currentUser, hidden }) => (
           Sign in
         </Link>
       )}
-      {currentUser ? (
-        currentUser.role === 'admin' ? (
-          <Link to="/customers" className="option">
-            Customers
-          </Link>
-        ) : null
-      ) : null}
       <CartIcon />
     </div>
     {hidden ? null : <CartDropDown />}
